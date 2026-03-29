@@ -1,3 +1,7 @@
+from datetime import datetime, timedelta
+
+
+
 class Formulario:
     def __init__(self, matricula_user, ponto_de_controle, numero_do_carro, matricula_do_motorista, hora_de_saida, hora_de_chegada, roleta_inicial, roleta_local, pessoas_em_pe):
 
@@ -52,18 +56,18 @@ class Formulario:
 
         self.matricula_user = matricula_user
         self.ponto_de_controle = ponto_de_controle
-        self.numero_da_linha = " "
+        self.numero_da_linha = "NÃO INFORMADO"
         self.numero_do_carro = numero_do_carro
         self.matricula_do_motorista = matricula_do_motorista
         self.hora_de_saida = hora_de_saida
         self.hora_de_chegada = hora_de_chegada
-        self.tempo_viagem_total = 0
+        self.tempo_viagem_total = self.calcular_tempo(hora_de_saida, hora_de_chegada)
         self.roleta_inicial = roleta_inicial
         self.roleta_local = roleta_local
         self.pessoas_em_pe = pessoas_em_pe
-        self.carregamento_de_pessoas_no_onibus = 0
-        self.data_anotacao = 0
-        self.hora_anotacao = 0
+        self.carregamento_de_pessoas_no_onibus = self.validar_roletas(roleta_inicial, roleta_local)
+        self.data_anotacao = self.definir_data_da_anotacao()
+        self.hora_anotacao = self.definir_hora_da_anotacao()
 
 
 
@@ -75,7 +79,6 @@ class Formulario:
     def matricula_user(self, matricula_digitada):
         if isinstance(matricula_digitada, int) and matricula_digitada > 0:
             self.__matricula_user = matricula_digitada
-            print(f"Matricula Validada [{matricula_digitada}]\n")
             
         else:
             self.__matricula_user = "NÃO INFORMADA"
@@ -109,6 +112,9 @@ class Formulario:
             self._ponto_de_controle = "NÃO INFORMADO"
 
             raise ValueError()
+        
+
+
 
     
     def definir_numero_da_linha(self):
@@ -297,24 +303,126 @@ class Formulario:
             else:
                 print("Inválido.")
                 raise ValueError()
+
+    @property
+    def numero_do_carro(self):
+        return self._numero_do_carro
+
+    @numero_do_carro.setter
+    def numero_do_carro(self, numero_do_carro_digitado):
+        if isinstance(numero_do_carro_digitado, int) and numero_do_carro_digitado > 0:
+            self._numero_do_carro = numero_do_carro_digitado
+        else:
+            print("Numero do carro Inválido. \nDigite novamente")
+            raise ValueError("Numero do carro Inválido.")
+    
+
+    @property
+    def matricula_do_motorista(self):
+        return self._matricula_do_motorista
+    
+    @matricula_do_motorista.setter
+    def matricula_do_motorista(self, matricula_digitada):
+        if isinstance(matricula_digitada, int) and matricula_digitada > 0:
+            self._matricula_do_motorista = matricula_digitada
             
+        else:
+            self._matricula_do_motorista = "NÃO INFORMADA"
+            print("Matrícula Inválida \n")
+            raise ValueError("Matrícula Não encontrada")
+        
+    @property 
+    def roleta_inicial(self):
+        return self._roleta_inicial
+    
+    @roleta_inicial.setter
+    def roleta_inicial(self, roleta_digitada):
+        if isinstance(roleta_digitada, int) and roleta_digitada >= 0 and roleta_digitada < 99999:
+            self._roleta_inicial = roleta_digitada
+        else:
+            self._roleta_inicial = "NÃO INFORMADO"
+            raise ValueError("Roleta Errada")
+        
+    @property
+    def roleta_local(self):
+        return self._roleta_local
+    
+    def roleta_local(self, roleta_digitada):
+        if isinstance(roleta_digitada, int) and roleta_digitada >= 0 and roleta_digitada < 99999:
+            self._roleta_local = roleta_digitada
+            self._roleta_local = roleta_digitada
+        else:
+            self._roleta_inicial = "NÃO INFORMADO"
+            raise ValueError("Roleta Errada")
+    
+
+    def definir_hora_da_anotacao(self):
+        hora_atual = datetime.now()
+        self.hora_anotacao = f"{hora_atual.strftime('%H:%M:%S')}"
+        return self.hora_anotacao
+
+    def definir_data_da_anotacao(self):
+        hora_atual = datetime.now()
+        self.data_anotacao = f"{hora_atual.strftime('%d/%m/%Y')}"
+        return self.data_anotacao
+
+
+    def tratar_horarios(self, horario_str):
+        limpo = str(horario_str).replace(":", "").zfill(4)
+        return datetime.strptime(limpo, "%H%M")
+
+
+    def calcular_tempo(self, horario_inicial, horario_final):
+        try:
+            inicio = self.tratar_horarios(horario_inicial)
+            fim = self.tratar_horarios(horario_final)
+            
+            diferenca = fim - inicio
+            if diferenca.days < 0:
+                diferenca = timedelta(days=1) + diferenca
+                
+            self.tempo_viagem_total = str(diferenca)
+            return self.tempo_viagem_total
+        except ValueError:
+            return "Erro: Formato de hora inválido"
+        
+    def validar_roletas(self, roleta_inicial, roleta_local):
+        if self.roleta_inicial < self.roleta_local:
+            total_de_pessoas_no_onibus = roleta_local - roleta_inicial
+            return total_de_pessoas_no_onibus
+
+        elif self.roleta_inicial == self.roleta_local:
+            print(f"ROLETAS IDÊNTICAS\n\nInicial: {self.roleta_inicial}\nLocal: {self.roleta_local}\n")
+
+            pergunta = str(input("Você deseja que as roletas sejam excluidas?[s/n]: ")).strip().lower()
+            if pergunta == 's':
+                self.roleta_inicial = 0
+                self.roleta_local = 0
+
+            elif pergunta == 'n':
+                print("Refaça o formulário...")
+                return ValueError("Erro de digitação, Refaça o formulário")
+            
+            else:
+                print("Digite s ou n [ex: s]: ")
+                return ValueError("Opção Inválida")
+        else:
+            print("A roleta inicial não pode ser maior que a local")
+            return ValueError("Roleta inicial menor que a roleta local")
+
 
 
 matricula_user = 100
 ponto_de_controle = 1 #passa a posicao da lista
 numero_da_linha = 0 #2146D passa a posicao na lista
-numero_do_carro = 294
+numero_do_carro = 46
 matricula_do_motorista = 5436
 hora_de_saida = "9:00"
 hora_de_chegada = "10:20"
-roleta_inicial = 59000
-roleta_local = 59030
+roleta_inicial = 0
+roleta_local = 50
 pessoas_em_pe = 0
 
 user1 = Formulario(matricula_user, ponto_de_controle, numero_do_carro, matricula_do_motorista, hora_de_saida, hora_de_chegada, roleta_inicial, roleta_local, pessoas_em_pe)
 
-user1.definir_numero_da_linha()
-print("\n",user1.numero_da_linha, "\n")
-
-"""print(19 * " ", "Viação Nossa Senhora do Amparo", 19 * " ", "\n\nLinha escolhida: \n", 20 * " ", "AVALIAÇÃO DE CARREGAMENTO", 20 * " ", "\n\nLinha escolhida: ")"""
-
+print("\n\n", 19 * " ", "Viação Nossa Senhora do Amparo", 19 * " ", "\n",75 * "=","\n", 20 * " ", "AVALIAÇÃO DE CARREGAMENTO", 20 * " ", "\n\n")
