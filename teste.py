@@ -24,6 +24,11 @@ linhas = {
     },
 
     "niteroi": {
+        "2144": {
+            "ida": ["2144R Maricá X Niterói"],
+            "volta": ["2144R Niterói X Maricá"]
+        }, 
+
         "4144": {
             "ida": ["4144R Recanto x Niterói", "4144T Terminal Itaipuaçu X Niterói", "4144C Recanto X Niterói - via Vivendas", "4144S  Terminal Itaipuaçu X Niterói - via Vivendas"],
             "volta": ["4144D Niterói X Recanto", "4144T Niterói X Terminal de Itaipuaçu", "4144B Niterói X Recanto - via Vivendas", "4144G Niterói X Recanto - via Vivendas"]
@@ -41,6 +46,5 @@ linhas = {
     }
 }
 
-print(linhas["castelo"]["2146"]["ida"][1])
-#for i, valor in enumerate(linhas["castelo"]["2146"]["ida"], start=1):
-    #print(i, valor)
+for chave, valor in enumerate(linhas["castelo"]["2146"].keys(), start=1):
+    print(f"[{chave}]: {valor}")
