@@ -347,6 +347,7 @@ class Formulario:
     def roleta_local(self):
         return self._roleta_local
     
+    @roleta_local.setter
     def roleta_local(self, roleta_digitada):
         if isinstance(roleta_digitada, int) and roleta_digitada >= 0 and roleta_digitada < 99999:
             self._roleta_local = roleta_digitada
