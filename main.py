@@ -75,11 +75,12 @@ class Formulario:
     def matricula_user(self, matricula_digitada):
         if isinstance(matricula_digitada, int) and matricula_digitada > 0:
             self.__matricula_user = matricula_digitada
-            print("Matricula Validada \n")
+            print(f"Matricula Validada [{matricula_digitada}]\n")
             
         else:
-            self.__matricula_user = 0
+            self.__matricula_user = "NÃO INFORMADA"
             print("Matrícula Inválida \n")
+            raise ValueError("Matrícula Não encontrada")
     
     @property
     def ponto_de_controle(self):
@@ -299,7 +300,7 @@ class Formulario:
             
 
 
-matricula_user = 1
+matricula_user = 100
 ponto_de_controle = 1 #passa a posicao da lista
 numero_da_linha = 0 #2146D passa a posicao na lista
 numero_do_carro = 294
