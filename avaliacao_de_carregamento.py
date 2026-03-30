@@ -6,7 +6,7 @@ class Formulario:
     def __init__(self, matricula_user, ponto_de_controle, numero_do_carro, matricula_do_motorista, hora_de_saida, hora_de_chegada, roleta_inicial, roleta_local, pessoas_em_pe):
 
         self.lista_pontos_de_controle = ("ESTAÇÃO N.S. MERCÊS (RIO)", "ESTAÇÃO JOÃO BRASIL (NIT)", "ESTAÇÃO N.S. MERCÊS (VOLTA)", "ESTAÇÃO JOÃO BRASIL (VOLTA)")
-
+        
         self.linhas = {
             "castelo": {
                 "2146": {
@@ -366,8 +366,9 @@ class Formulario:
 
 
     def tratar_horarios(self, horario_str):
-        limpo = str(horario_str).replace(":", "").zfill(4)
-        return datetime.strptime(limpo, "%H%M")
+        limpo = str(horario_str).replace(":", "").strip()
+        formato_completo = limpo.zfill(4)
+        return datetime.strptime(formato_completo, "%H%M")
 
 
     def calcular_tempo(self, horario_inicial, horario_final):
@@ -421,23 +422,65 @@ class Formulario:
             self._pessoas_em_pe = "NÃO INFORMADO"
             print("Insira um valor válido")
             raise ValueError("Erro de valor")
+    
+    def exibir_relatorio(self):
+        print("\n" + "="*75)
+        print(f"{'VIAÇÃO NOSSA SENHORA DO AMPARO':^75}")
+        print(f"{'RELATÓRIO DE CARREGAMENTO':^75}")
+        print("="*75)
+        
+        print(f"| DATA: {self.data_anotacao:<15} | HORA REGISTRO: {self.hora_anotacao:<10} |")
+        print(f"| MATRÍCULA USUÁRIO: {self.matricula_user:<10} | MATRÍCULA MOTORISTA: {self.matricula_do_motorista:<8} |")
+        print(f"| NÚMERO DO CARRO: {self.numero_do_carro:<52} |")
+        print("-" * 75)
+        
+        print(f"  PONTO DE CONTROLE: {self.ponto_de_controle}")
+        print(f"  LINHA SELECIONADA: {self.numero_da_linha}")
+        print(f"  HORÁRIO: Saída {self.hora_de_saida} -> Chegada {self.hora_de_chegada}")
+        print(f"  TEMPO TOTAL DE VIAGEM: {self.tempo_viagem_total}")
+        print("-" * 75)
+
+        print(f"  ROLETA INICIAL: {self.roleta_inicial:<15} ROLETA LOCAL: {self.roleta_local}")
+        print(f"  PASSAGEIROS (GIRO): {self.carregamento_de_pessoas_no_onibus:<11} PESSOAS EM PÉ: {self.pessoas_em_pe}")
+
+        total_viagem = self.carregamento_de_pessoas_no_onibus + (self.pessoas_em_pe if isinstance(self.pessoas_em_pe, int) else 0)
+        print(f"  CARREGAMENTO TOTAL NO PONTO: {total_viagem}")
+        
+        print("="*75 + "\n")
 
 
 
 
-matricula_user = 11175
-ponto_de_controle = 1 #passa a posicao da lista
-numero_da_linha = 0 #2146D passa a posicao na lista
-numero_do_carro = 46
-matricula_do_motorista = 5436
-hora_de_saida = "9:00"
-hora_de_chegada = "10:20"
-roleta_inicial = 51010
-roleta_local = 51063
-pessoas_em_pe = 1
+while True:
+    try:
+        print("\n" + 75 * "=")
+        print(20 * " ", "Viação Nossa Senhora do Amparo", 20 * " ")
+        print(75 * "=" + "\n")
 
-user1 = Formulario(matricula_user, ponto_de_controle, numero_do_carro, matricula_do_motorista, hora_de_saida, hora_de_chegada, roleta_inicial, roleta_local, pessoas_em_pe)
+        matricula_user = int(input("Sua matrícula: "))
+        print("\n[1] - ESTAÇÃO N.S. MERCÊS (RIO)")
+        print("[2] - ESTAÇÃO JOÃO BRASIL (NIT)")
+        print("[3] - ESTAÇÃO N.S. MERCÊS (VOLTA)")
+        print("[4] - ESTAÇÃO JOÃO BRASIL (VOLTA)")
+        ponto_de_controle = int(input("\nDigite o número do seu ponto de controle: ")) - 1
+        carro = int(input("Número do carro: "))
+        matricula_do_motorista = int(input("Matrícula do motorista: "))
+        horario_saida = input("Hora de saída (HH:MM): ")
+        horario_chegada = input("Hora de chegada (HH:MM): ")
+        roleta_inicial = int(input("Roleta Inicial: "))
+        roleta_local = int(input("Roleta Local: "))
+        pessoas_em_pe = int(input("Pessoas em pé: "))
+        user1 = Formulario(matricula_user, ponto_de_controle, carro, matricula_do_motorista, horario_saida, horario_chegada, roleta_inicial, roleta_local, pessoas_em_pe)
+        print("\n")
 
-print("\n\n", 19 * " ", "Viação Nossa Senhora do Amparo", 19 * " ", "\n",75 * "=","\n", 20 * " ", "AVALIAÇÃO DE CARREGAMENTO", 20 * " ", "\n\n")
+        user1.definir_numero_da_linha()
 
-print()
+        user1.exibir_relatorio()
+        break
+
+    except ValueError as e:
+        print(f"\n[ERRO]: {e}")
+        print("Tente preencher o formulário novamente...\n")
+    
+    except Exception as e:
+        print(f"\nOcorreu um erro inesperado: {e}")
