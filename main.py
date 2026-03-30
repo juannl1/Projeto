@@ -112,9 +112,6 @@ class Formulario:
             self._ponto_de_controle = "NÃO INFORMADO"
 
             raise ValueError()
-        
-
-
 
     
     def definir_numero_da_linha(self):
@@ -402,28 +399,45 @@ class Formulario:
 
             elif pergunta == 'n':
                 print("Refaça o formulário...")
-                return ValueError("Erro de digitação, Refaça o formulário")
+                raise ValueError("Erro de digitação, Refaça o formulário")
             
             else:
                 print("Digite s ou n [ex: s]: ")
-                return ValueError("Opção Inválida")
+                raise ValueError("Opção Inválida")
         else:
             print("A roleta inicial não pode ser maior que a local")
-            return ValueError("Roleta inicial menor que a roleta local")
+            raise ValueError("Roleta inicial menor que a roleta local")
+        
+    @property
+    def pessoas_em_pe(self):
+        return self._pessoas_em_pe
+    
+    @pessoas_em_pe.setter
+    def pessoas_em_pe(self, pessoas_em_pe_digitada):
+        if isinstance(pessoas_em_pe_digitada, int) and pessoas_em_pe_digitada >= 0:
+            self._pessoas_em_pe = pessoas_em_pe_digitada
+            
+        else:
+            self._pessoas_em_pe = "NÃO INFORMADO"
+            print("Insira um valor válido")
+            raise ValueError("Erro de valor")
 
 
 
-matricula_user = 100
+
+matricula_user = 11175
 ponto_de_controle = 1 #passa a posicao da lista
 numero_da_linha = 0 #2146D passa a posicao na lista
 numero_do_carro = 46
 matricula_do_motorista = 5436
 hora_de_saida = "9:00"
 hora_de_chegada = "10:20"
-roleta_inicial = 0
-roleta_local = 50
-pessoas_em_pe = 0
+roleta_inicial = 51010
+roleta_local = 51063
+pessoas_em_pe = 1
 
 user1 = Formulario(matricula_user, ponto_de_controle, numero_do_carro, matricula_do_motorista, hora_de_saida, hora_de_chegada, roleta_inicial, roleta_local, pessoas_em_pe)
 
 print("\n\n", 19 * " ", "Viação Nossa Senhora do Amparo", 19 * " ", "\n",75 * "=","\n", 20 * " ", "AVALIAÇÃO DE CARREGAMENTO", 20 * " ", "\n\n")
+
+print()
